@@ -46,7 +46,10 @@ LABEL org.opencontainers.image.vendor="Geekpad"
 RUN addgroup --system --gid ${WEEWX_UID} weewx \
   && adduser --system --uid ${WEEWX_UID} --ingroup weewx weewx
 
-RUN apt-get update && apt-get install -y git libusb-1.0-0
+RUN apt-get update && apt-get install -y git libusb-1.0-0 locales
+
+RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
+    locale-gen
 
 WORKDIR ${WEEWX_HOME}
 
@@ -61,5 +64,9 @@ VOLUME ["/data"]
 ENV PATH="/opt/venv/bin:$PATH"
 ENV PIP_TARGET="/data/lib/python/site-packages"
 ENV PYTHONPATH="/data/lib/python/site-packages"
+ENV LC_ALL=en_US.UTF-8
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+
 USER weewx
 ENTRYPOINT ["./entrypoint.sh"]
